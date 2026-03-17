@@ -1,0 +1,57 @@
+{% extends 'investigation/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>🔍 Investigation Enron</h1>
+    
+    <form method="get" class="card p-4 bg-light mb-4">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Mots-clés (Sujet ou corps)</label>
+                <input type="text" name="q" class="form-control" value="{{ query }}" placeholder="Ex: scandal, project, meeting...">
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Expéditeur</label>
+                <select name="sender" class="form-select">
+                    <option value="">Tous les expéditeurs</option>
+                    {% for person in persons %}
+                        <option value="{{ person.id }}" {% if selected_sender == person.id|stringformat:"i" %}selected{% endif %}>
+                            {{ person.email }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-2 mb-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+            </div>
+        </div>
+    </form>
+
+    {% if results %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Date</th>
+                        <th>De</th>
+                        <th>Sujet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for email in results %}
+                    <tr onclick="window.location='{% url 'thread' email.id %}'" style="cursor: pointer;">
+                        <td class="text-nowrap">{{ email.date|date:"d/m/Y H:i" }}</td>
+                        <td><small>{{ email.from_person.email }}</small></td>
+                        <td>{{ email.subject }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif query or selected_sender %}
+        <div class="alert alert-info">Aucun email ne correspond à votre recherche.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'investigation/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'search' %}">Recherche</a></li>
+            <li class="breadcrumb-item active">Fil de discussion</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">💬 Fil de discussion</h1>
+    
+    <div class="thread">
+        {% for msg in thread %}
+        <div class="card mb-3 {% if msg == root_email %}border-primary border-3{% endif %}">
+            <div class="card-header {% if msg == root_email %}bg-primary text-white{% endif %}">
+                <div class="d-flex justify-content-between">
+                    <strong>
+                        {% if msg == root_email %}
+                            📧 Original
+                        {% else %}
+                            ↩️ Réponse
+                        {% endif %}
+                        - {{ msg.from_person.email }}
+                    </strong>
+                    <span>{{ msg.date|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if msg.subject %}
+                <h5 class="card-title">{{ msg.subject }}</h5>
+                {% endif %}
+                <p class="card-text" style="white-space: pre-line;">{{ msg.body }}</p>
+                
+                <div class="mt-3">
+                    <strong>Destinataires :</strong>
+                    {% for r in msg.recipients.all %}
+                        {% if r.type == 'to' %}
+                            <span class="badge bg-secondary">{{ r.person.email }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                {% if msg.in_reply_to %}
+                <div class="mt-2 text-muted small">
+                    ↪️ En réponse à : 
+                    <a href="{% url 'thread' msg.in_reply_to.id %}">Voir le message parent</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-secondary">← Retour</a>
+    </div>
+</div>
+{% endblock %}

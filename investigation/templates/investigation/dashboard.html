@@ -1,0 +1,99 @@
+{% extends 'investigation/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">📊 Tableau de bord Enron</h1>
+
+<!-- Statistiques globales -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total emails</h5>
+                <h2>{{ total_emails }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Personnes uniques</h5>
+                <h2>{{ total_persons }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Période</h5>
+                <h2>{{ first_date|date:"Y" }} - {{ last_date|date:"Y" }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphique volume par mois -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>📅 Volume d'emails par mois</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top 10 expéditeurs -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>🏆 Top 10 des expéditeurs les plus actifs</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Email</th>
+                            <th>Nombre d'emails</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sender in top_senders %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ sender.email }}</td>
+                            <td>{{ sender.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Graphique mensuel
+const ctx = document.getElementById('monthlyChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for item in monthly_counts %}'{{ item.month|date:"M Y" }}',{% endfor %}],
+        datasets: [{
+            label: 'Nombre d\'emails',
+            data: [{% for item in monthly_counts %}{{ item.count }},{% endfor %}],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+</script>
+{% endblock %}

@@ -132,7 +132,7 @@ def parse_email_file(file_path, folder_name):
 
 # Étapes du pipeline :
 
--Parcours récursif de l arborescence maildir/
+-Parcours  de l'arborescence maildir/(racine)
 -Extraction des métadonnées avec la librairie standard email
 -Nettoyage et normalisation des adresses
 -Extraction du corps du message

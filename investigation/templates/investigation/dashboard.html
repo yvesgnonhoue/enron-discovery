@@ -1,76 +1,110 @@
 {% extends 'investigation/base.html' %}
 
 {% block content %}
-<h1 class="mb-4">📊 Tableau de bord Enron</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">📊 Tableau de bord Enron</h1>
+    
+    <!-- FILTRES DE PÉRIODE -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📅 Choisir une période</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Date début</label>
+                    <input type="date" name="start_date" class="form-control" 
+                           value="{{ start_date }}" min="1998-01-01" max="2002-12-31">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Date fin</label>
+                    <input type="date" name="end_date" class="form-control" 
+                           value="{{ end_date }}" min="1998-01-01" max="2002-12-31">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        🔍 Appliquer la période
+                    </button>
+                </div>
+            </form>
+            <small class="text-muted mt-2 d-block">
+                Période disponible : 1998 - 2002
+            </small>
+        </div>
+    </div>
+    
+    <!-- STATISTIQUES GLOBALES -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total emails</h5>
+                    <h2>{{ total_emails }}</h2>
+                    <small>sur la période</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Personnes uniques</h5>
+                    <h2>{{ total_persons }}</h2>
+                    <small>sur la période</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Période</h5>
+                    <h2>{{ first_date|date:"Y" }} - {{ last_date|date:"Y" }}</h2>
+                    <small>sélectionnée</small>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Statistiques globales -->
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <h5 class="card-title">Total emails</h5>
-                <h2>{{ total_emails }}</h2>
+    <!-- GRAPHIQUE VOLUME PAR MOIS -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>📈 Volume d'emails par mois ({{ start_date }} à {{ end_date }})</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyChart" style="height: 300px;"></canvas>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5 class="card-title">Personnes uniques</h5>
-                <h2>{{ total_persons }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <h5 class="card-title">Période</h5>
-                <h2>{{ first_date|date:"Y" }} - {{ last_date|date:"Y" }}</h2>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Graphique volume par mois -->
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5>📅 Volume d'emails par mois</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="monthlyChart" style="height: 300px;"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Top 10 expéditeurs -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5>🏆 Top 10 des expéditeurs les plus actifs</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Email</th>
-                            <th>Nombre d'emails</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sender in top_senders %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ sender.email }}</td>
-                            <td>{{ sender.count }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- TOP 10 EXPÉDITEURS -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>🏆 Top 10 des expéditeurs les plus actifs</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>Nombre d'emails</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sender in top_senders %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ sender.email }}</td>
+                                <td>{{ sender.count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -87,12 +121,20 @@ new Chart(ctx, {
             label: 'Nombre d\'emails',
             data: [{% for item in monthly_counts %}{{ item.count }},{% endfor %}],
             borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1,
+            fill: true
         }]
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Volume d\'emails par mois'
+            }
+        }
     }
 });
 </script>

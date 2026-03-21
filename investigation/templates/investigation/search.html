@@ -1,16 +1,35 @@
 {% extends 'investigation/base.html' %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<style>
+    .ui-autocomplete {
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1050;
+    }
+    .ui-menu-item {
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+    }
+    .ui-menu-item:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h1>🔍 Investigation Enron</h1>
-    
-    <form method="get" class="card p-4 bg-light mb-4">
+
+    <form method="get" class="card p-4 bg-light mb-4" id="searchForm">
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Mots-clés (Sujet ou corps)</label>
-                <input type="text" name="q" class="form-control" value="{{ query }}" placeholder="Ex: scandal, project, meeting...">
+                <label class="form-label">Mots-clés (Sujet ou expéditeur)</label>
+                <input type="text" name="q" id="search-input" class="form-control"
+                       value="{{ query }}" placeholder="Ex: meeting, report, kay.mann@enron.com...">
             </div>
-            
+
             <div class="col-md-4 mb-3">
                 <label class="form-label">Expéditeur</label>
                 <select name="sender" class="form-select">
@@ -22,7 +41,7 @@
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="col-md-2 mb-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary w-100">Filtrer</button>
             </div>
@@ -50,8 +69,45 @@
                 </tbody>
             </table>
         </div>
-    {% elif query or selected_sender %}
-        <div class="alert alert-info">Aucun email ne correspond à votre recherche.</div>
+    {% elif query %}
+        <div class="alert alert-info">
+            😕 Désolé, aucun email contenant <strong>"{{ query }}"</strong> n'a été trouvé.<br>
+            <small>Suggestions : vérifiez l'orthographe ou essayez des mots plus courts.</small>
+        </div>
+    {% elif selected_sender %}
+        <div class="alert alert-info">Aucun email trouvé pour cet expéditeur.</div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#search-input").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "{% url 'suggest_email_subjects' %}",
+                data: { q: request.term },
+                success: function(data) {
+                    response(data);
+                },
+                error: function() {
+                    response([]);
+                }
+            });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            $("#search-input").val(ui.item.value);
+            // Décommente la ligne ci-dessous pour soumettre automatiquement
+            // $("#searchForm").submit();
+            return false;
+        }
+    }).autocomplete("instance")._renderItem = function(ul, item) {
+        return $("<li>").append("<div>" + item.label + "</div>").appendTo(ul);
+    };
+});
+</script>
 {% endblock %}

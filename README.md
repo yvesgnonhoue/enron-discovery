@@ -69,7 +69,7 @@ Ce projet vise à concevoir un **outil d'aide à l'investigation numérique** à
 ## 🗄️ Modélisation des données (MCD)
 
 ### Schéma relationnel
-![Schéma relationnel](chemin/vers/ton/image.png)
+![Schéma relationnel](schéma.png)
 
 ### Entités principales
 

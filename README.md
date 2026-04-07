@@ -70,7 +70,7 @@ Ce projet vise à concevoir un **outil d'aide à l'investigation numérique** à
 
 ### Schéma relationnel
 
-![Schéma relationnel](https://raw.githubusercontent.com/yvesgnonhoue/d%C3%A9couverte%20d%27Enron/principal/documents/schema.jpg)
+![Schéma relationnel](https://raw.githubusercontent.com/yvesgnonhoue/d%C3%A9couverte%20d%27Enron/principal/docs/schéma.jpg.jpg)
 
 ### Entités principales
 

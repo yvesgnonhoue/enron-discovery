@@ -1,12 +1,36 @@
 ﻿# Projet Enron Discovery
+## 👥 Auteur principal
+**Yves GNONHOUE** – Développement, modélisation & tests  
+*Projet réalisé en collaboration avec Carmel AWANDE dans le cadre du Master 1 Data Science*
 
-# Projet Enron Discovery - Plateforme d'investigation e-Discovery
+# 📧 Enron Discovery – Plateforme d'investigation e-Discovery
+
+[![Python](https://img.shields.io/badge/Python-3.11-blue)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-5.2-green)](https://djangoproject.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-✓-blue)](https://docker.com)
+
+> **490 847 emails analysés** – Un outil d'aide à l'investigation numérique basé sur le Enron Corpus
+
+---
+
+## 📋 Sommaire
+- [Contexte](#-contexte-du-projet)
+- [Stack technique](#-stack-technique)
+- [Fonctionnalités](#-fonctionnalités-implémentées)
+- [Modélisation des données](#-modélisation-des-données-mcd)
+- [Extraction & parsing](#-extraction-et-parsing)
+- [Interface web](#-interface-web)
+- [Installation](#-installation-et-exécution)
+- [Auteur](#-auteur-principal)
+
+---
 
 ## 📋 Contexte du projet
 
-Ce projet a pour objectif de concevoir un outil d'aide à l'investigation numérique basé sur le **Enron Corpus**, un jeu de données contenant plus de 500 000 emails issus d'une entreprise réelle après un scandale financier majeur.
+Ce projet vise à concevoir un **outil d'aide à l'investigation numérique** à partir du Enron Corpus, un jeu de données contenant plus de **500 000 emails** issus d'une entreprise réelle après un scandale financier majeur.
 
-La mission consiste à transformer une masse de données brutes non structurées en une **application web fonctionnelle** permettant à des journalistes ou des auditeurs de :
+**Objectifs :**
 - Naviguer dans les échanges
 - Identifier des acteurs clés
 - Rechercher des informations critiques
@@ -14,174 +38,95 @@ La mission consiste à transformer une masse de données brutes non structurées
 
 ---
 
-##  Architecture technique
-
-La stack technique a été choisie pour sa robustesse et sa capacité à passer à l'échelle :
+## 🧰 Stack technique
 
 | Composant | Technologie | Rôle |
 |-----------|-------------|------|
 | Backend | Django 5.2 | Framework web principal |
-| Base de données | SQLite (développement) / PostgreSQL (production) | Stockage des données structurées |
+| Base de données | SQLite / PostgreSQL | Stockage structuré |
 | Parsing | Python (email, pandas) | Extraction des emails bruts |
-| Frontend | Bootstrap 5 + Chart.js | Interface utilisateur responsive |
-| Conteneurisation | Docker | Isolation de PostgreSQL |
+| Frontend | Bootstrap 5 + Chart.js | Interface responsive |
+| Conteneurisation | Docker | Isolation PostgreSQL |
 | Versionnage | Git | Gestion du code source |
 
 ---
 
-## Fonctionnalités implémentées
+## ✅ Fonctionnalités implémentées
 
-- ✅ **Dashboard** : Statistiques globales (490 847 emails, 77 780 personnes)
-- ✅ **Graphique** : Volume d'emails par mois (1998-2002)
-- ✅ **Top 10** : Classement des expéditeurs les plus actifs
-- ✅ **Recherche avancée** : Par mots-clés, dates et expéditeur
-- ✅ **Autocomplétion** : Suggestions de sujets et d'expéditeurs en temps réel
-- ✅ **Explorateur de threads** : Visualisation des conversations chronologiques
-- ✅ **Nettoyage des données** : Gestion des encodages et suppression des signatures
-- ✅ **Index GIN** : Prêt pour la recherche plein texte avec PostgreSQL
+| Statut | Fonctionnalité |
+|--------|----------------|
+| ✅ | Dashboard avec statistiques globales (490 847 emails, 77 780 personnes) |
+| ✅ | Graphique volume d'emails par mois (1998-2002) |
+| ✅ | Top 10 des expéditeurs les plus actifs |
+| ✅ | Recherche avancée (mots-clés, dates, expéditeur) |
+| ✅ | Autocomplétion sujets/expéditeurs en temps réel |
+| ✅ | Explorateur de fils de discussion chronologique |
+| ✅ | Nettoyage des données (encodages, signatures) |
+| ✅ | Index GIN pour recherche plein texte PostgreSQL |
 
 ---
 
 ## 🗄️ Modélisation des données (MCD)
 
-### Choix de modélisation
-
-La conception du schéma relationnel a fait l'objet d'une attention particulière pour garantir :
-- **Normalisation** : Séparation des entités pour éviter la redondance
-- **Intégrité référentielle** : Contraintes de clés étrangères
-- **Performance** : Index adaptés aux requêtes fréquentes
-
 ### Schéma relationnel
+![Schéma relationnel](chemin/vers/ton/image.png)
 
+### Entités principales
 
-![Schéma relationnel](docs/schema.jpg)
-
-#### Relations
-- **1 Personne** peut envoyer **plusieurs Emails** (relation 1 → N)
-- **1 Email** peut avoir **plusieurs Destinataires** (relation 1 → N)
-- **1 Destinataire** lie **1 Email** à **1 Personne** (table de liaison)
-- **1 Email** peut répondre à **1 autre Email** (auto-référence via `reponse_a_id`)
-#### Fil de discussion
-Structure implicite créée par le champ `reponse_a_id` qui permet de reconstruire les conversations.
-
-
-
-### Description des entités
-
-#### **Personne**
-Stocke tous les acteurs (expéditeurs et destinataires) de manière unique.
-- `id` : identifiant unique auto-généré
-- `courriel` : adresse email normalisée (contrainte d'unicité)
-- `nom` : nom de la personne (peut être vide)
-
-#### **Email**
-Représente un message électronique.
+**Personne** – Stockage unique des acteurs
 - `id` : identifiant unique
-- `message_id` : identifiant unique du message (header Message-ID)
-- `expediteur_id` : clé étrangère vers l'expéditeur
-- `sujet` : objet du message
-- `corps` : corps du message (texte brut)
-- `date` : date d'envoi
-- `reponse_a_id` : auto-référence vers l'email parent (pour les threads)
-- `dossier` : retrace l'arborescence des fichiers(inbox, sent, etc.)
+- `email` : adresse normalisée (unique)
+- `nom` : nom de la personne
 
-#### **Destinataire**
-Gère la relation many-to-many entre emails et personnes avec typage.
-- `id` : identifiant unique
-- `email_id` : clé étrangère vers l'email concerné
-- `personne_id` : clé étrangère vers la personne destinataire
-- `type` : nature de la relation ('to', 'cc', 'bcc')
-- Contrainte d'unicité : (email, personne, type)
+**Email** – Représente un message
+- `id`, `message_id`, `expediteur_id`, `sujet`, `corps`, `date`
+- `reponse_a_id` : auto-référence pour les fils de discussion
+- `dossier` : arborescence (boîte de réception, envoyés...)
 
-### Indexation et optimisation
+**Destinataire** – Relation many-to-many avec typage
+- `email_id`, `personne_id`, `type` (to / cc / bcc)
 
+### Indexation PostgreSQL
 ```sql
--- Index pour recherche chronologique
 CREATE INDEX idx_email_date ON email(date);
-
--- Index pour recherche par expéditeur
 CREATE INDEX idx_email_expediteur ON email(expediteur_id);
-
--- Index GIN pour recherche plein texte (PostgreSQL)
 CREATE INDEX idx_email_corps_gin ON email USING GIN(to_tsvector('french', corps));
+```
 
--- Index composites pour Destinataire
-CREATE INDEX idx_destinataire_email_personne ON destinataire(email_id, personne_id);
+## ⚙️ Extraction et parsing
+Script principal : scripts/import_enron.py
 
-##Justification des choix :
--Table Personne séparée : Évite la redondance des adresses email et permet de suivre l'activité d'un acteur sur plusieurs messages
--Table Destinataire : Modélise correctement la cardinalité (un email → plusieurs destinataires) avec conservation du type (to/cc)
--Champ reponse_a_id : Permet la reconstruction des fils de discussion sans table dédiée
+# Pipeline :
+1. Parcours de l'arborescence maildir/
 
-Index GIN : Optimise les recherches textuelles sur 500 000+ messages
+2. Extraction des métadonnées avec email library
 
-## Extraction et parsing
-Le script `scripts/import_enron.py` assure l ingestion 'des données' :
-# Extraits significatifs du parsing
+3. Nettoyage et normalisation des adresses
 
-def parse_email_file(file_path, folder_name):
-    """Parse un fichier .eml et extrait les métadonnées"""
-    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-        msg = email.message_from_file(f)
-    
-    # Extraction des headers
-    message_id = msg.get('Message-ID', '').strip('<>')
-    from_addr = clean_email(msg.get('From', ''))
-    to_addrs = parse_addresses(msg.get('To', ''))
-    # ...
+4. Extraction du corps du message
 
-# Étapes du pipeline :
+5. Suppression des signatures
 
--Parcours  de l'arborescence maildir/(racine)
--Extraction des métadonnées avec la librairie standard email
--Nettoyage et normalisation des adresses
--Extraction du corps du message
--Nettoyage des signatures (suppression des pieds de page)
--Insertion en base avec gestion des clés étrangères
+6. Insertion en base avec gestion des clés étrangères
 
-# Gestion des particularités du dataset
+## 🌐 Interface web
 
--Absence de pièces jointes : Le dataset officiel n en contient pas, table Attachment supprimée
--Adresses normalisées : Les emails invalides sont convertis en utilisateur@enron.com
--Encodages variés : Gestion des erreurs avec errors='ignore'
+## Dashboard global
+- Métriques : total emails, personnes uniques, période couverte
+- Graphique linéaire interactif Chart.js
+- Top 10 expéditeurs
 
-## Interface Web
-# Dashboard 'global'
+## Moteur de recherche
+- Autocomplétion sujets/expéditeurs
+- Recherche plein texte
+- Filtrage par dates et expéditeur
 
--Le dashboard présente des statistiques descriptives avec Chart.js :
--Volume de mails par mois : Graphique linéaire interactif avec filtres de période
--Top 10 des expéditeurs : Tableau des acteurs les plus actifs
--Métriques globales : Total emails, personnes uniques, période couverte
+## Explorateur de threads
+- Affichage chronologique email + réponses
+- Message original encadré en bleu
+- Liens parents/enfants
 
-# Vue dashboard (extrait)
-def dashboard(request):
-    total_emails = Email.objects.count()
-    total_persons = Person.objects.count()
-    monthly_counts = Email.objects.annotate(
-        month=TruncMonth('date')
-    ).values('month').annotate(count=Count('id'))
-    # ...
-
-# Moteur de recherche
-
-Recherche avancée avec :
--Autocomplétion : Suggestions de sujets et d expéditeurs en temps réel
--Mots-clés sur le sujet et le corps des messages (icontains)
--Filtrage par plage de dates
--Filtrage par expéditeur
-def suggest_email_subjects(request):
-    """API d'autocomplétion pour sujets et expéditeurs"""
-    # ...
-
-# Explorateur de threads
-Affichage chronologique d un email et de toutes ses réponses :
--L email original est mis en évidence (cadre bleu)
--Les réponses sont affichées dans l ordre
--Liens vers les messages parents
--Affichage des destinataires
-
-# Déploiement avec Docker
-Le fichier `docker-compose.yml` permet de lancer PostgreSQL de manière isolée :
+## 🐳 Déploiement avec Docker
 version: '3.8'
 services:
   postgres:
@@ -193,83 +138,47 @@ services:
       POSTGRES_PASSWORD: enron_password
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
-## Passage de SQLite à PostgreSQL
-# settings.py
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'enron_db',
-        'USER': 'enron_user',
-        'PASSWORD': 'enron_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+## 🚀 Installation et exécution
 
-## Migration des données
-# Sauvegarde des données SQLite
-python manage.py dumpdata > data_backup.json
-
-# Bascule vers PostgreSQL
-docker-compose up -d
-python manage.py migrate
-python manage.py loaddata data_backup.json
-
-# Installation et exécution
-
-# Prérequis
--Python 3.11+
--Docker (optionnel, pour PostgreSQL)
--Git
-
-## Étapes d installation :
-
-# 1. Cloner le dépôt
+# 1. Cloner
 git clone https://github.com/yvesgnonhoue/enron-discovery.git
 cd enron-discovery
-
-# 2. Créer l environnement virtuel
+# 2. Environnement virtuel
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-
-# 3. Installer les dépendances
+source venv/bin/activate  # ou venv\Scripts\activate
+# 3. Dépendances
 pip install -r requirements.txt
-
-# 4. Configurer la base de données
+# 4. Migrations
 python manage.py migrate
-
-# 5. Lancer le serveur
+# 5. Lancement
 python manage.py runserver
+# 6. Import des données
+cd scripts && python import_enron.py
 
-## Import des données :
-# Placer les emails extraits dans data/maildir/
-cd scripts
-python import_enron.py
+## 📊 Statistiques sur le dataset
 
+| Métrique | Valeur |
+|----------|--------|
+| Total emails | 490 847 |
+| Personnes uniques | 77 780 |
+| Période | 1998–2002 |
+| Taille (compressé) | 1.7 Go |
 
-## Statistiques sur le dataset
--Nombre total d emails : 490 847
--Nombre de personnes uniques : 77 780
--Période couverte : 1998-2002 (après filtrage des dates aberrantes)
--Taille des données : 1.7 Go (compressé)
--Affichage d un email et de toutes les réponses associées sous forme de conversation chronologique.
+---
 
-👥 Auteurs
-AWANDE Carmel - Développement & Modélisation
-GNONHOUE Yves - Développement & Tests
-Projet réalisé dans le cadre du cours de Structure des données.
+📧 [yvanognonhoue@gmail.com](mailto:yvanognonhoue@gmail.com)
+🔗 [GitHub](https://github.com/yvesgnonhoue)
 
-📝 Notes importantes
+---
+
+## 📝 Notes importantes
 -Les données brutes (dossier data/) ne sont pas incluses dans le dépôt Git
 -L application utilise SQLite par défaut pour le développement
 -Le passage à PostgreSQL est documenté et prêt via Docker
 -Les index GIN sont actifs uniquement avec PostgreSQL
+
+---
 
 🔗 Lien du dépôt
 https://github.com/yvesgnonhoue/enron-discovery

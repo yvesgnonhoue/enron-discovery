@@ -167,6 +167,34 @@ cd scripts && python import_enron.py
 | Taille (compressé) | 1.7 Go |
 
 ---
+## 🖥️ Dashboard – Interface utilisateur
+
+Le dashboard permet une exploration intuitive du corpus Enron :
+
+- **Statistiques globales** : 490 079 emails, 19 833 personnes
+- **Graphique interactif** : volume d'emails par mois (Chart.js)
+- **Top 10 expéditeurs** : classement des acteurs les plus actifs
+- **Recherche avancée** : plein texte, autocomplétion, filtre
+- **Explorateur de threads** : visualisation chronologique
+
+### 📸 Aperçu de l'interface
+
+![Dashboard stats](dashboard_stats.png)
+
+![Volume emails par mois](volume_emails_par_mois.png)
+
+![Top 10 expéditeurs](top_expediteurs.png)
+
+![Recherche autocomplétion](recherche_autocompletion.png)
+
+![Sélection email](selection_email.png)
+
+![Fil de discussion début](fil_discussion_debut.png)
+
+![Fil de discussion fin](fil_discussion_fin.png)
+
+
+---
 
 📧 [yvanognonhoue@gmail.com](mailto:yvanognonhoue@gmail.com)
 🔗 [GitHub](https://github.com/yvesgnonhoue)

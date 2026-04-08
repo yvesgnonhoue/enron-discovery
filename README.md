@@ -179,19 +179,19 @@ Le dashboard permet une exploration intuitive du corpus Enron :
 
 ### 📸 Aperçu de l'interface
 
-![Dashboard stats](dashboard_stats.png)
+![Dashboard stats](docs/dashboard_stats.png)
 
-![Volume emails par mois](volume_emails_par_mois.png)
+![Volume emails par mois](docs/volume_emails_par_mois.png)
 
-![Top 10 expéditeurs](top_expediteurs.png)
+![Top 10 expéditeurs](docs/top_expediteurs.png)
 
-![Recherche autocomplétion](recherche_autocompletion.png)
+![Recherche autocomplétion](docs/recherche_autocompletion.png)
 
-![Sélection email](selection_email.png)
+![Sélection email](docs/selection_email.png)
 
-![Fil de discussion début](fil_discussion_debut.png)
+![Fil de discussion début](docs/fil_discussion_debut.png)
 
-![Fil de discussion fin](fil_discussion_fin.png)
+![Fil de discussion fin](docs/fil_discussion_fin.png)
 
 
 ---
